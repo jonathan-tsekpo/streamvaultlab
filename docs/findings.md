@@ -43,8 +43,7 @@ nothing turned up this year.
 | F10 | 41 films (37%) released before 2000: 28 franchise, 13 standalone | Different population | Show both windows; lead with 2000 onward (risk #3). | `analysis.py` | `kpis.csv` | ADR-005 |
 | F11 | 4 films with extreme returns, all before 2000: Star Wars, The Godfather, The Good, the Bad and the Ugly, Jaws | Legitimate (real hits) | Keep them. Lead with the typical film, which they can't distort. | `diagnose.py` | `findings.csv` | ADR-004 |
 | F12 | 9 series have only one film on the list | Legitimate, needs a definition | Count those films as standalone (risk #1). | `transform.py` | `fact_films.csv`, `sensitivity.csv` | ADR-003 |
-| F13 | Films with no cast or director listed: `None found` | Legitimate | They stay in the comparison but can't appear in the talent tables. | `transform.py` | `cast.csv`, `directors.csv` | ADR-006 |
-
+| F13 | Films with no cast or director listed: none (0 without cast, 0 without director) | None found | Would stay in the comparison but couldn't appear in the talent tables. | `transform.py` | `cast.csv`, `directors.csv` | ADR-006 |
 A finding of "none" still matters: it tells Adjoa the check exists and that nothing was wrong this year.
 
 ## Where every line of the list went

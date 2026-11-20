@@ -9,3 +9,6 @@ __pycache__/
 
 cache/
 out/
+
+# Editor settings
+.vscode/
