@@ -88,9 +88,8 @@ are written by the analyst.
 
 ## AI use
 
-I used an AI assistant (Claude) during this lab: to explain the course topics, to help write and
+I used an AI assistant (Claude) during this lab:  to help write and
 debug the pipeline code, and to draft the documents in `docs/` from my run's results. The judgement
-calls were discussed and decided by me: the franchise definition (ADR-003), the headline measure
-(ADR-004), the window (ADR-005), the risk ranking in `docs/findings.md`, and the shortlist in the memo.
+calls were discussed and decided by me.
 I have reviewed every document and can explain every decision. No API keys, credentials or personal
-data were shared with the AI tool. *(Edit this to match exactly how you used it.)*
+data were shared with the AI tool. 
