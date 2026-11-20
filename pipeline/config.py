@@ -20,7 +20,7 @@ TABLES = OUT / "tables"                      # published tables (CSV)
 RUN_LOG = OUT / "run_log.jsonl"              # one JSON line per run
 SUMMARY = OUT / "summary.md"                 # the results in one file, for review
 
-# TMDb API. The key is read from .env (TMDB_API_KEY)
+# TMDb API. The key is read from .env (TMDB_API_KEY), never written in code.
 API_BASE = "https://api.themoviedb.org/3"
 TIMEOUT = (3.05, 20)                         # seconds: (connect, read)
 THROTTLE_SECONDS = 0.25                      # pause between live calls: it's a shared free API
@@ -35,7 +35,7 @@ MAX_UNUSABLE_SHARE = 0.25                    # ADR-007: stop if more than 25% of
 # Timing (fetching excluded). Put the brief's budget here in seconds, or leave None.
 TIMING_SIZES = (127, 500, 5000)
 TIMING_REPEATS = 5                           # best of 5 runs
-TIME_BUDGET_SECONDS = None
+TIME_BUDGET_SECONDS = 60                     # ADR-007: Adjoa reruns live in meetings
 
 # Spot-check: decided BEFORE looking at the results.
 SPOT_CHECK_SEED = 42
@@ -53,8 +53,9 @@ RULES = {
     "exclude_short_films": True,         # ADR-002: shorts are a different population from features
     "short_film_minutes": 40,
     "drop_same_title_and_year": True,    # ADR-002: same title + year under two ids = one film twice?
-    "franchise_min_on_list": 2,          # ADR-003: 1 = any film TMDb puts in a collection;
-                                         #          2 = only collections with 2+ films on the list
+    "franchise_min_on_list": 1,          # ADR-003: 1 = any film in a series is franchise (studios sell
+                                         #          the whole series as one bundle); 2 = only series
+                                         #          with 2+ films on the list
 }
 
 HEADLINE_METRIC = "median_roi"           # ADR-004: "median_roi" or "ratio_of_totals" (both are computed)

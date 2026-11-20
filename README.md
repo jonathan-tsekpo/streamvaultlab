@@ -40,8 +40,9 @@ python run_pipeline.py --quick      # skip the timing and the live spot-check
 
 Every run writes `out/summary.md`: all the results in one readable file. Rerun as often as you
 like. Tables are replaced safely, and the hashes in `out/run_log.jsonl` show whether a rerun gave
-identical content (`timing` and `spot_check` change every run by design). Next year: replace
-`data/id_list.csv` and run the same command.
+identical content (`timing` and `spot_check` change every run by design). Each quarter: replace
+`data/id_list.csv`, run `python run_pipeline.py` before the meeting (it downloads new titles), and
+`python run_pipeline.py --offline` in the meeting (about 11 seconds).
 
 Open `explore/profile_candidates.ipynb` in VS Code to look at the rows behind the numbers.
 Clear its outputs before committing.
@@ -92,4 +93,4 @@ debug the pipeline code, and to draft the documents in `docs/` from my run's res
 calls were discussed and decided by me: the franchise definition (ADR-003), the headline measure
 (ADR-004), the window (ADR-005), the risk ranking in `docs/findings.md`, and the shortlist in the memo.
 I have reviewed every document and can explain every decision. No API keys, credentials or personal
-data were shared with the AI tool.
+data were shared with the AI tool. *(Edit this to match exactly how you used it.)*

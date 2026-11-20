@@ -7,13 +7,16 @@ the spot-check. The run also prints a warning when the answer changes between wi
 a cleaning rule.
 
 ## Who it helps
-**Adjoa**, who will rerun this next year with about 500 titles, on her own. Without it she would
-have to open 20 tables and work out for herself whether the answer still holds.
+**Adjoa**, who reruns this every quarter on her own laptop, sometimes live in a meeting, and next year
+with about 500 titles. Without it she would have to open 20 tables in front of the room and work out
+for herself whether the answer still holds.
 
 ## What it's worth
-- **Time:** checking a run takes minutes, on one page.
-- **Fewer mistakes:** this year one result flips with the franchise definition. The warning makes
-  sure a flip like that is never missed.
+- **Time:** a rerun from saved data takes about 11 seconds, and the answer is on one page, so she
+  can rerun and read it during a meeting.
+- **Fewer mistakes:** this year one measure would flip if the franchise definition changed. If a future
+  list makes the answer change between windows or depend on a rule, the run says so in capital
+  letters, so Adjoa can't miss it, which is exactly what the brief asks for ("say so loudly").
 - **Easy to share:** the summary has only public TMDb figures, never the API key.
 
 ## How to use it
