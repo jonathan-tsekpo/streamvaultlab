@@ -1,0 +1,5 @@
+pandas>=3.0,<4
+numpy>=2.0
+requests>=2.32
+python-dotenv>=1.0
+ipykernel>=6

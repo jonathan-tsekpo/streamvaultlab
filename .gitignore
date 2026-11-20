@@ -1,0 +1,11 @@
+# Python
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+
+# Secrets: the real key lives only in .env (see .env.example)
+.env
+
+# Rebuilt by the pipeline. Committing cache/ (a frozen TMDb snapshot) is ADR-010.
+cache/
+out/
