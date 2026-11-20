@@ -79,17 +79,3 @@ Clear its outputs before committing.
 | `timing` | size | Seconds per stage at 127 / 500 / 5,000 titles |
 | `spot_check` | sampled film per field | Our output vs live TMDb, each difference classified |
 
-## What the code doesn't do
-
-It produces evidence; it doesn't make the judgement calls. The verdicts in `docs/findings.md`, the
-ADRs, the shortlist reasons, the talent interpretation, the memo, the deal note and the improvement
-are written by the analyst.
-
-## AI use
-
-I used an AI assistant (Claude) during this lab: to explain the course topics, to help write and
-debug the pipeline code, and to draft the documents in `docs/` from my run's results. The judgement
-calls were discussed and decided by me: the franchise definition (ADR-003), the headline measure
-(ADR-004), the window (ADR-005), the risk ranking in `docs/findings.md`, and the shortlist in the memo.
-I have reviewed every document and can explain every decision. No API keys, credentials or personal
-data were shared with the AI tool. *(Edit this to match exactly how you used it.)*
