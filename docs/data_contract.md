@@ -34,7 +34,7 @@ team (receives) · **Version:** 1.0
 | `runtime` | Feature length (40+ minutes) | All feature length | Excluded: "short film" | `pipeline/validate.py` |
 | `release_date` | `YYYY-MM-DD` or empty | All 112 dated; 41 before 2000 | Kept; a film with no date appears only in "all years" | `pipeline/transform.py`, `pipeline/analysis.py` |
 | `belongs_to_collection` | A collection, or null for a standalone film | 96 films in 32 collections; 9 collections have only one film on the list | null = standalone (a fact, not a gap) | `pipeline/transform.py` |
-| `cast`, `crew` | Lists, possibly empty | | An empty list gives no rows for that film | `pipeline/transform.py` |
+| `cast`, `crew` | Lists, possibly empty | 7,827 cast rows and 122 director rows for 112 films; every film has cast and at least one director | An empty list gives no rows for that film | `pipeline/transform.py` |
 
 ## The run as a whole (QA gate)
 

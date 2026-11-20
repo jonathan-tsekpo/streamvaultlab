@@ -15,7 +15,7 @@ clean and the run safe.
 | **004** | [**Lead with the typical film's return**](004-which-measure-leads.md) | `HEADLINE_METRIC`, `MIN_GROUP_SIZE` | Accepted |
 | **005** | [**Lead with films from 2000 onward**](005-which-time-window-leads.md) | `WINDOW_START_YEAR` | Accepted |
 | 006 | [Talent = director and top 3 actors, 2+ films each](006-what-counts-as-talent.md) | `LEAD_CAST_MAX_ORDER`, `TALENT_MIN_FILMS`, `HIT_ROI` | Accepted |
-| 007 | [Fast enough for a meeting, stop if results don't add up, no downloaded data in git](007-running-safely-and-repeatably.md) | `TIME_BUDGET_SECONDS`, `MAX_UNUSABLE_SHARE`; `.gitignore` | Accepted |
+| 007 | [Fast enough for a meeting, stop if results don't add up, no downloaded data in git](007-running-safely-and-repeatably.md) | `TIME_BUDGET_SECONDS`, `MAX_UNUSABLE_SHARE`; `cache/` kept out of git in `.gitignore` | Accepted |
 
 For a new decision, copy [`template.md`](template.md) and use the next number. To change a decision,
 write a new ADR that replaces the old one, rather than editing it.

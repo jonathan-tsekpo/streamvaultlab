@@ -12,6 +12,7 @@ class ReconciliationError(Exception):
     """The outputs don't reconcile to the inputs."""
 
 
+FINISHED = ["200", "404"]        # every other status means a fetch failed or was skipped
 UNUSABLE = ["blank line", "not a TMDb id", "not found on TMDb (404)", "fetch failed", "not fetched (offline)"]
 
 
@@ -22,7 +23,7 @@ def run_checks(t: dict) -> dict:
     return {
         "every line kept or quarantined": len(lines) == len(ids) + len(t["id_quarantine"]),
         "every usable id fetched exactly once": len(acq) == len(ids) and acq["movie_id"].is_unique,
-        "no fetch left unfinished": not acq["movie_status"].str.match("error|not cached").any(),
+        "no fetch left unfinished": bool(acq["movie_status"].isin(FINISHED).all()),
         "every fetched film flattened": len(films) == acq["movie_status"].eq("200").sum(),
         "every film in analysis or excluded": len(films) == len(fact) + len(t["film_quarantine"]),
         "one row per film": bool(fact["movie_id"].is_unique),

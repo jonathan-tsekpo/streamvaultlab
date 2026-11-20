@@ -35,6 +35,8 @@ MAX_UNUSABLE_SHARE = 0.25                    # ADR-007: stop if more than 25% of
 # Timing (fetching excluded). Put the brief's budget here in seconds, or leave None.
 TIMING_SIZES = (127, 500, 5000)
 TIMING_REPEATS = 5                           # best of 5 runs
+# The larger timing sizes are copies of the real films, made by repetition (no randomness),
+# so the timing data is the same every run. Keep it that way if timing.copies() is changed.
 TIME_BUDGET_SECONDS = 60                     # ADR-007: Adjoa reruns live in meetings
 
 # Spot-check: decided BEFORE looking at the results.

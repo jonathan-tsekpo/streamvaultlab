@@ -8,12 +8,13 @@ import pandas as pd
 
 from pipeline import config
 
+TOP = 15        # talent tables are long: the summary shows the top names, the CSVs have all
 
-def section(title: str, table: pd.DataFrame, note: str = "", rows: int = None) -> str:
-    shown = table if rows is None else table.head(rows)
-    body = shown.to_string(index=False) if len(shown) else "(no rows)"
-    more = f"\n... {len(table) - rows} more rows in out/tables/" if rows and len(table) > rows else ""
-    return f"## {title}\n{note}\n```text\n{body}{more}\n```\n"
+
+def section(title: str, table: pd.DataFrame, note: str = "") -> str:
+    """One titled block with the whole table. Formatting only: callers pass the rows to show."""
+    body = table.to_string(index=False) if len(table) else "(no rows)"
+    return f"## {title}\n{note}\n```text\n{body}\n```\n"
 
 
 def write_summary(meta: dict, t: dict) -> None:
@@ -48,8 +49,10 @@ def write_summary(meta: dict, t: dict) -> None:
         section("8. Films with revenue = 0 vs the rest", t["missing_vs_present"]),
         section("9. Franchise candidates", t["franchise_candidates"].drop(columns="titles")),
         section("10. Standalone candidates", t["standalone_candidates"]),
-        section("11. Directors", t["talent_directors"], rows=15),
-        section("12. Lead actors", t["talent_leads"], rows=15),
+        section("11. Directors (top 15)", t["talent_directors"].head(TOP),
+                f"All {len(t['talent_directors'])} names are in out/tables/talent_directors.csv."),
+        section("12. Lead actors (top 15)", t["talent_leads"].head(TOP),
+                f"All {len(t['talent_leads'])} names are in out/tables/talent_leads.csv."),
     ]
     if "timing" in t:
         parts.append(section("13. Timing (fetching excluded)", t["timing"]))

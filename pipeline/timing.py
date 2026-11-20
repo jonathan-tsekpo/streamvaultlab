@@ -15,18 +15,25 @@ import numpy as np
 import pandas as pd
 
 from pipeline import config
-from pipeline.analysis import both_windows, franchise_candidates, standalone_candidates, talent
+from pipeline.analysis import run_analysis
 from pipeline.transform import prepare
 
 
 def copies(films, cast, directors, n: int):
-    """n films made by repeating the real ones. Each copy gets new film and collection
-    ids, so copies form their own collections instead of growing the real ones."""
+    """n films made by repeating the real ones, in order. There is no randomness: the same
+    films always give the same copies, so the timing data is identical every run.
+
+    Each copy gets new film ids and new collection ids, so copies form their own series
+    instead of growing the real ones. Collection ids are renumbered 0, 1, 2 ... per copy,
+    so they can never collide however large TMDb's own ids are."""
     reps = int(np.ceil(n / len(films)))
     big = pd.concat([films.assign(copy=k) for k in range(reps)], ignore_index=True).iloc[:n]
     big["old_id"] = big["movie_id"]
     big["movie_id"] = pd.array(np.arange(n) + 100_000_000, dtype="Int64")
-    big["collection_id"] = big["collection_id"] + big["copy"] * 10_000_000
+
+    codes, uniques = pd.factorize(big["collection_id"])        # -1 = no collection (standalone)
+    new_collection = pd.Series(big["copy"] * len(uniques) + codes, index=big.index, dtype="Int64")
+    big["collection_id"] = new_collection.where(codes >= 0)      # standalones stay without a series
     id_map = big[["old_id", "movie_id"]]
 
     def remap(people):
@@ -37,24 +44,14 @@ def copies(films, cast, directors, n: int):
 
 
 def time_stages(films, cast, directors) -> dict:
-    seconds = {}
+    """Seconds for the two stages Adjoa waits for: cleaning, then the analysis."""
     start = time.perf_counter()
     fact, _ = prepare(films, config.RULES)
-    seconds["clean"] = time.perf_counter() - start
+    clean = time.perf_counter() - start
 
     start = time.perf_counter()
-    both_windows(fact)
-    seconds["compare"] = time.perf_counter() - start
-
-    start = time.perf_counter()
-    franchise_candidates(fact)
-    standalone_candidates(fact)
-    seconds["shortlist"] = time.perf_counter() - start
-
-    start = time.perf_counter()
-    talent(cast, directors, fact)
-    seconds["talent"] = time.perf_counter() - start
-    return seconds
+    run_analysis(fact, cast, directors)
+    return {"clean": clean, "analyse": time.perf_counter() - start}
 
 
 def time_pipeline(films, cast, directors) -> pd.DataFrame:

@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 from pipeline.extract import read_cached
-from pipeline.validate import validate_films
+from pipeline.validate import money_unknown, validate_films
 
 
 # ------------------------------------------------------------- flatten
@@ -97,12 +97,8 @@ def build_tables(acquisition: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame,
 def clean_money(films_in: pd.DataFrame, rules: dict) -> pd.DataFrame:
     """Apply the money rules, then add roi, collection size and group. Never removes a film."""
     budget, revenue = films_in["budget"], films_in["revenue"]
-    tiny = rules["tiny_money_threshold"]
-
-    budget_unknown = budget.isna() | (budget.eq(0) & rules["zero_budget_is_unknown"]) \
-        | (budget.gt(0) & budget.lt(tiny) & rules["tiny_money_is_unknown"])
-    revenue_unknown = revenue.isna() | (revenue.eq(0) & rules["zero_revenue_is_unknown"]) \
-        | (revenue.gt(0) & revenue.lt(tiny) & rules["tiny_money_is_unknown"])
+    budget_unknown = money_unknown(budget, rules["zero_budget_is_unknown"], rules)
+    revenue_unknown = money_unknown(revenue, rules["zero_revenue_is_unknown"], rules)
 
     fact = films_in.assign(
         budget_clean=budget.mask(budget_unknown),
@@ -128,33 +124,35 @@ def prepare(films: pd.DataFrame, rules: dict) -> tuple[pd.DataFrame, pd.DataFram
 
 
 # ------------------------------------------------------------- the id account
-def id_account(lines, id_quarantine, acquisition, film_quarantine) -> pd.DataFrame:
+def id_account(lines, ids, id_quarantine, acquisition, film_quarantine) -> pd.DataFrame:
     """One row per line of the candidate list, saying where it ended up.
 
+    The film id of each usable line comes from validation (ids), never parsed again here.
     validate= on each merge proves the join can't add or lose a line.
     """
-    ids = lines[["source_line", "raw_value"]].merge(
+    account = lines[["source_line", "raw_value"]].merge(
         id_quarantine[["source_line", "reason", "duplicate_of_line"]],
         on="source_line", how="left", validate="one_to_one")
-    ids["movie_id"] = pd.to_numeric(ids["raw_value"].str.strip(), errors="coerce").astype("Int64")
-    ids = ids.merge(acquisition[["movie_id", "movie_status"]], on="movie_id", how="left",
-                    validate="many_to_one")
-    ids = ids.merge(film_quarantine[["movie_id", "reason"]].rename(columns={"reason": "film_reason"}),
-                    on="movie_id", how="left", validate="many_to_one")
-    assert len(ids) == len(lines), "the id account gained or lost a line"
+    account = account.merge(ids[["source_line", "movie_id"]], on="source_line", how="left",
+                            validate="one_to_one")
+    account = account.merge(acquisition[["movie_id", "movie_status"]], on="movie_id", how="left",
+                            validate="many_to_one")
+    account = account.merge(film_quarantine[["movie_id", "reason"]].rename(columns={"reason": "film_reason"}),
+                            on="movie_id", how="left", validate="many_to_one")
+    assert len(account) == len(lines), "the id account gained or lost a line"
 
-    usable = ids["reason"].isna()
-    ids["outcome"] = np.select(
-        [~usable,
-         ids["movie_status"].eq("404").fillna(False),
-         ids["movie_status"].str.startswith("error").fillna(False),
-         ids["movie_status"].eq("not cached").fillna(False),
-         ids["film_reason"].notna()],
-        [ids["reason"],
+    status = account["movie_status"]
+    account["outcome"] = np.select(
+        [account["reason"].notna(),
+         status.eq("404").fillna(False),
+         status.str.startswith("error").fillna(False),
+         status.eq("not cached").fillna(False),
+         account["film_reason"].notna()],
+        [account["reason"],
          "not found on TMDb (404)",
          "fetch failed",
          "not fetched (offline)",
-         "excluded: " + ids["film_reason"].fillna("")],
+         "excluded: " + account["film_reason"].fillna("")],
         default="in analysis",
     )
-    return ids.drop(columns="film_reason")
+    return account.drop(columns="film_reason")

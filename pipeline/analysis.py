@@ -168,3 +168,17 @@ def talent(cast: pd.DataFrame, directors: pd.DataFrame, fact: pd.DataFrame):
     leads = cast.loc[cast["order"].le(config.LEAD_CAST_MAX_ORDER), ["movie_id", "person_id", "name"]]
     return (talent_table(directors, fact, "director"),
             talent_table(leads.drop_duplicates(), fact, "lead actor"))
+
+
+# ------------------------------------------------------------- one entry point
+def run_analysis(fact: pd.DataFrame, cast: pd.DataFrame, directors: pd.DataFrame) -> dict:
+    """Every table the memo needs, from the cleaned films. The orchestrator and the timing
+    both call this, so neither depends on the individual functions above."""
+    directors_table, leads_table = talent(cast, directors, fact)
+    return {
+        "kpis": both_windows(fact),
+        "franchise_candidates": franchise_candidates(fact),
+        "standalone_candidates": standalone_candidates(fact),
+        "talent_directors": directors_table,
+        "talent_leads": leads_table,
+    }

@@ -18,10 +18,23 @@ report and a spot-check against the live API.
 
 ## Setup
 
+Create a virtual environment (Python 3.11 or newer) and install the exact versions used for this
+analysis:
+
 ```bash
 python -m venv .venv
-.venv\Scripts\Activate.ps1          # macOS/Linux: source .venv/bin/activate
+```
+
+Activate it with the line for your system:
+
+| System | Command |
+| --- | --- |
+| Windows (PowerShell) | `.venv\Scripts\Activate.ps1` |
+| macOS / Linux | `source .venv/bin/activate` |
+
+```bash
 pip install -r requirements.txt
+nbstripout --install                 # once per clone: git then strips notebook outputs automatically
 ```
 
 1. Put the candidate list from Evalu8 at `data/id_list.csv`.
@@ -44,8 +57,9 @@ identical content (`timing` and `spot_check` change every run by design). Each q
 `data/id_list.csv`, run `python run_pipeline.py` before the meeting (it downloads new titles), and
 `python run_pipeline.py --offline` in the meeting (about 11 seconds).
 
-Open `explore/profile_candidates.ipynb` in VS Code to look at the rows behind the numbers.
-Clear its outputs before committing.
+Open `explore/profile_candidates.ipynb` in VS Code to look at the rows behind the numbers. You
+don't need to clear its outputs by hand: after `nbstripout --install`, git removes them on every
+commit, so no data ends up in the repository.
 
 ## Layout
 
@@ -61,7 +75,7 @@ Clear its outputs before committing.
 | `docs/data_contract.md` | What we expect from the list and the API, and what happens if it's broken | Both sides know the rules |
 | `docs/memo.md`, `docs/improvement.md` | The memo to Kwame and the improvement beyond the brief | What reaches the client |
 | `explore/` | The investigation notebook | Exploring is kept apart from production code |
-| `cache/`, `out/` | Raw API responses and outputs | Rebuilt by the code (committing `cache/` is ADR-007) |
+| `cache/`, `out/` | Raw API responses and outputs | Rebuilt by the code and kept out of git by `.gitignore` (why: ADR-007) |
 
 ## Outputs (`out/tables/`)
 
@@ -88,8 +102,8 @@ are written by the analyst.
 
 ## AI use
 
-I used an AI assistant (Claude) during this lab:  to help write and
+I used an AI assistant (Claude) during this lab: to help write and
 debug the pipeline code, and to draft the documents in `docs/` from my run's results. The judgement
 calls were discussed and decided by me.
 I have reviewed every document and can explain every decision. No API keys, credentials or personal
-data were shared with the AI tool. 
+data were shared with the AI tool.

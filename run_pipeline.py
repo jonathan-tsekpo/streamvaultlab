@@ -21,8 +21,7 @@ import pandas as pd
 from dotenv import load_dotenv
 
 from pipeline import config
-from pipeline.analysis import (both_windows, flips, franchise_candidates, leader, sensitivity,
-                               standalone_candidates, talent)
+from pipeline.analysis import flips, leader, run_analysis, sensitivity
 from pipeline.checks import check_before_load
 from pipeline.diagnose import add_flags, findings, missing_vs_present
 from pipeline.extract import fetch_all, read_id_list
@@ -67,23 +66,21 @@ def run(offline: bool, refresh: bool, quick: bool) -> dict:
     fact, film_quarantine = step("clean", prepare, films, config.RULES)
     log.info("in the comparison %d, excluded %d %s", len(fact), len(film_quarantine),
              film_quarantine["reason"].value_counts().to_dict())
-    account = step("id account", id_account, lines, id_quarantine, acquisition, film_quarantine)
+    account = step("id account", id_account, lines, ids, id_quarantine, acquisition, film_quarantine)
 
     # ---- ANALYSE
     flagged = step("diagnose", add_flags, films)
-    kpis = step("compare", both_windows, fact)
+    results = step("analyse", run_analysis, fact, cast, directors)
+    kpis = results["kpis"]
     sens = step("sensitivity", sensitivity, films)
-    directors_t, leads_t = step("talent", talent, cast, directors, fact)
     tables = {
         "lines": lines, "ids": ids, "id_quarantine": id_quarantine, "acquisition": acquisition,
         "films": films, "cast": cast, "directors": directors, "fact_films": fact,
         "film_quarantine": film_quarantine, "id_account": account,
         "films_flagged": flagged, "findings": findings(flagged),
         "missing_vs_present": missing_vs_present(flagged),
-        "kpis": kpis, "sensitivity": sens, "flips": flips(sens),
-        "franchise_candidates": franchise_candidates(fact),
-        "standalone_candidates": standalone_candidates(fact),
-        "talent_directors": directors_t, "talent_leads": leads_t,
+        "sensitivity": sens, "flips": flips(sens),
+        **results,
     }
 
     # ---- QA GATE, then LOAD
