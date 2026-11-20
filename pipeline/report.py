@@ -46,8 +46,8 @@ def write_summary(meta: dict, t: dict) -> None:
         section("7. Diagnosis: every flag and what it does to the gap", t["findings"],
                 "gap_shift = how far the franchise-minus-standalone gap moves if these films are left out."),
         section("8. Films with revenue = 0 vs the rest", t["missing_vs_present"]),
-        section("9. Franchise candidates", t["franchise_candidates"].drop(columns="titles"), rows=15),
-        section("10. Standalone candidates", t["standalone_candidates"], rows=15),
+        section("9. Franchise candidates", t["franchise_candidates"].drop(columns="titles")),
+        section("10. Standalone candidates", t["standalone_candidates"]),
         section("11. Directors", t["talent_directors"], rows=15),
         section("12. Lead actors", t["talent_leads"], rows=15),
     ]

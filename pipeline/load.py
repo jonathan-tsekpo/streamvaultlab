@@ -25,7 +25,11 @@ def write_table(df: pd.DataFrame, name: str) -> dict:
     target.parent.mkdir(parents=True, exist_ok=True)
     temp = target.with_suffix(".tmp")
     df.to_csv(temp, index=False)
-    os.replace(temp, target)                 # the swap is all-or-nothing
+    try:
+        os.replace(temp, target)             # the swap is all-or-nothing
+    except PermissionError:                  # Windows: the file is open in another program
+        temp.unlink(missing_ok=True)
+        raise PermissionError(f"{target.name} is open in another program (Excel?): close it and rerun") from None
     return {"table": name, "rows": len(df), "hash": content_hash(df)}
 
 

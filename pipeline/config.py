@@ -20,7 +20,7 @@ TABLES = OUT / "tables"                      # published tables (CSV)
 RUN_LOG = OUT / "run_log.jsonl"              # one JSON line per run
 SUMMARY = OUT / "summary.md"                 # the results in one file, for review
 
-# TMDb API. The key is read from .env (TMDB_API_KEY), never written in code.
+# TMDb API. The key is read from .env (TMDB_API_KEY)
 API_BASE = "https://api.themoviedb.org/3"
 TIMEOUT = (3.05, 20)                         # seconds: (connect, read)
 THROTTLE_SECONDS = 0.25                      # pause between live calls: it's a shared free API

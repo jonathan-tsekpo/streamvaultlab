@@ -46,16 +46,20 @@ def is_franchise(films: pd.DataFrame) -> pd.Series:
     return films["collection_id"].notna() & on_list.ge(config.RULES["franchise_min_on_list"]).fillna(False)
 
 
-def gap(films: pd.DataFrame) -> float:
-    """Median franchise return minus median standalone return (raw money)."""
-    group = np.where(is_franchise(films), "franchise", "standalone")
+def gap(films: pd.DataFrame, franchise: pd.Series) -> float:
+    """Median franchise return minus median standalone return (raw money).
+
+    franchise is decided ONCE on the whole list, so leaving films out never
+    changes another film's group: the same definition as the analysis.
+    """
+    group = np.where(franchise, "franchise", "standalone")
     medians = raw_roi(films).groupby(group).median()
     return medians.get("franchise", np.nan) - medians.get("standalone", np.nan)
 
 
 def findings(flagged: pd.DataFrame) -> pd.DataFrame:
     franchise = is_franchise(flagged)
-    gap_all = gap(flagged)
+    gap_all = gap(flagged, franchise)
     rows = []
     for column in [c for c in flagged.columns if c.startswith("flag_")]:
         has_it = flagged[column]
@@ -67,7 +71,7 @@ def findings(flagged: pd.DataFrame) -> pd.DataFrame:
             "standalone_films": int((has_it & ~franchise).sum()),
             "before_2000": int((has_it & flagged["flag_before_2000"]).sum()),
             "gap_all": round(gap_all, 3),
-            "gap_without": round(gap(flagged[~has_it]), 3),
+            "gap_without": round(gap(flagged[~has_it], franchise[~has_it]), 3),
             "example_ids": " ".join(map(str, flagged.loc[has_it, "movie_id"].head(8))),
         })
     table = pd.DataFrame(rows)

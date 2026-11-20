@@ -1,18 +1,4 @@
-"""EXTRACT: read the candidate list, and fetch every film from TMDb into a raw cache.
 
-Extraction is literal on purpose:
-  * the id list is read as text, every line kept (blanks too), nothing converted,
-    so validate.py sees exactly what arrived;
-  * each API response is saved to cache/ exactly as received, BEFORE any parsing,
-    so every later stage reads a fixed, dated snapshot.
-
-Being polite to a shared free API:
-  * the cache is checked first, so a rerun makes zero requests;
-  * a 404 is recorded and remembered, so it is never requested again;
-  * 429 and 5xx are retried with growing waits, obeying Retry-After;
-  * 401 (bad key) stops the run at once: retrying a permanent failure is pointless;
-  * live calls are spaced out and identify the project in the User-Agent.
-"""
 import json
 import os
 import time
